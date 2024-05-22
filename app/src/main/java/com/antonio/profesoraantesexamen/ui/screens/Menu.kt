@@ -12,7 +12,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.items
+
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Button
 import androidx.compose.material3.Divider
@@ -35,21 +36,22 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.antonio.profesoraantesexamen.ui.model.Item
+import androidx.navigation.NavController
 import com.antonio.profesoraantesexamen.ui.model.ItemSer
-import com.antonio.profesoraantesexamen.ui.model.grabarCambiosFich
-import com.antonio.profesoraantesexamen.ui.model.grabarCambios_Fichdat
-import com.antonio.profesoraantesexamen.ui.model.items
+//import com.antonio.profesoraantesexamen.ui.model.grabarCambios_Fichdat
+import com.antonio.profesoraantesexamen.ui.model.guardarItemEnFichero
+import com.antonio.profesoraantesexamen.ui.model.guardarListaEnFichero
 import com.antonio.profesoraantesexamen.ui.model.itemsSer
-import com.antonio.profesoraantesexamen.ui.model.leerDatosFich
-import com.antonio.profesoraantesexamen.ui.model.leerDatos_Fichdat
-import com.antonio.profesoraantesexamen.ui.model.serializarObjetoFich
+//import com.antonio.profesoraantesexamen.ui.model.leerDatos_Fichdat
+import com.antonio.profesoraantesexamen.ui.model.leerItemArchivo
+//import com.antonio.profesoraantesexamen.ui.model.serializarObjetoFich
+import com.antonio.profesoraantesexamen.ui.viewmodel.ItemViewModel
 import java.io.File
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ScaffoldScreenAppFich() {
+fun ScaffoldScreenAppFich(navController: NavController, viewModel: ItemViewModel) {
 
     Scaffold(
         topBar = {
@@ -66,7 +68,7 @@ fun ScaffoldScreenAppFich() {
                 contentColor = MaterialTheme.colorScheme.primary,
             ) {
                 Text(text = "Listado-numEltos-")
-                Text(text = items.size.toString())
+                Text(text = itemsSer.size.toString())
             }
         }
     ) {// (1)
@@ -78,103 +80,104 @@ fun ScaffoldScreenAppFich() {
             verticalArrangement = Arrangement.Top
         ) {
 
-            AdministrarItems()
+            AdministrarItems(navController,viewModel)
         }
     }
 }
 
-@Preview(showSystemUi = false)
-@Composable
-fun AppConFichsScreen() {
 
-    ScaffoldScreenAppFich()
+@Composable
+fun AppConFichsScreen(navController: NavController, viewModel: ItemViewModel) {
+
+    ScaffoldScreenAppFich(navController,viewModel)
 }
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AdministrarItems() {
+fun AdministrarItems(navController: NavController, viewModel: ItemViewModel) {
     val activity = LocalContext.current
+    //leerDatos_Fichdat(activity)
+    guardarListaEnFichero(activity)
 
-    var nombre by remember { mutableStateOf("") }
-    var descr by remember { mutableStateOf("") }
+
 
     Column(
 
     ) {
-        OutlinedTextField(value = nombre,
-            onValueChange = { nombre = it },
+        OutlinedTextField(value = viewModel.nombre,
+            onValueChange = { viewModel.set_nombre(it)},
             label = { Text("Nombre de item") },
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(5.dp)
         )
-        OutlinedTextField(value = descr,
-            onValueChange = { descr = it },
+        OutlinedTextField(value = viewModel.descr,
+            onValueChange = { viewModel.set_descr(it) },
             label = { Text("Descripción") },
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(5.dp)
         )
         Button(onClick = {
-            val nuevoItem = Item(nombre, descr)
-            items.add(nuevoItem)
 
-            val nuevoItemSer = ItemSer(nombre, descr)
+
+            val nuevoItemSer = ItemSer(viewModel.nombre, viewModel.descr)
             itemsSer.add(nuevoItemSer)
 
             val path = activity.getFilesDir()
 
-            //.txt
-            val file = File(path, "items.txt")
-            file.appendText("${nombre}\n${descr}\n")
 
             //.dat
-            val archivo = File(path,"items.dat")
+           // val archivo = File(path,"items.dat")
             // Serializar objeto
-            serializarObjetoFich(nuevoItemSer, archivo)
+          //  serializarObjetoFich(nuevoItemSer, archivo)
+            guardarItemEnFichero(activity,nuevoItemSer)
 
-            nombre = ""
-            descr = ""
+            viewModel.set_nombre("")
+            viewModel.set_descr("")
         }, modifier = Modifier.padding(5.dp)) {
             Text(text = "Agregar", /*modifier = Modifier.fillMaxWidth()*/)
         }
 
-        val file = File(activity.filesDir, "items.txt")
-        if (file.exists()) {
+//        val file = File(activity.filesDir, "items.dat")
+//        if (file.exists()) {
 
-            leerDatosFich(activity)//uso de archivos .txt,.dat para persistir datos
-            leerDatos_Fichdat(activity)//uso .dat
 
-            LazyColumn() {
-                itemsIndexed(items) { indice, item ->
+            //leerDatos_Fichdat(activity)//uso .dat
+
+
+            LazyColumn(){
+                items(itemsSer){
                     MostrarItem(
-                        indice,
-                        item,
-                        editNombre = { nombre = it },
-                        editDescr = { descr = it })
+                        objeto=it ,
+                        editNombre = { viewModel.set_nombre(it) },
+                        editDescr = { viewModel.set_descr(it) }
+                    )
                 }
             }
-        }
+       // }
     }
 }
 
+
+
 @Composable
-fun MostrarItem(indice: Int, item: Item,editNombre:(String)->Unit,editDescr:(String)->Unit) {
+fun MostrarItem(objeto: ItemSer,editNombre: (String) -> Unit, editDescr: (String) -> Unit) {
     val context = LocalContext.current
 
     Row(
         modifier = Modifier
             .padding(16.dp)
             .fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceBetween,//hace que ocupen todo el espacio horizontal
+        horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ){
         Column(
 
         ){
-            Text(text = "Nombre-> "+item.nombre)
-            Text(text = "Descr->"+item.descr)
+            Text(text = "Nombre-> "+objeto.nombre)
+            Text(text = "Descr->"+objeto.descr)
         }
         Column(
 
@@ -182,12 +185,10 @@ fun MostrarItem(indice: Int, item: Item,editNombre:(String)->Unit,editDescr:(Str
             Image(painter = painterResource(id = android.R.drawable.ic_delete),
                 contentDescription = "",
                 modifier = Modifier.clickable {
-                    items.removeAt(indice)
 
-                    itemsSer.removeAt(indice)
-
-                    grabarCambiosFich(context)//usando .txt
-                    grabarCambios_Fichdat(context)
+                    itemsSer.remove(objeto)
+                    //grabarCambios_Fichdat(context)
+                    guardarItemEnFichero(context,objeto)
                 })
         }
         Column(
@@ -199,14 +200,13 @@ fun MostrarItem(indice: Int, item: Item,editNombre:(String)->Unit,editDescr:(Str
 
                     Toast.makeText(context, "Modifica Datos Contacto seleccionado.", Toast.LENGTH_SHORT).show()
 
-                    items.removeAt(indice)
-                    itemsSer.removeAt(indice)
 
-                    grabarCambiosFich(context)//usando .txt
-                    grabarCambios_Fichdat(context)//usando .dat
+                    itemsSer.remove(objeto)
+                    //grabarCambios_Fichdat(context)
+                    guardarItemEnFichero(context,objeto)
 
-                    editNombre(item.nombre)
-                    editDescr(item.descr)
+                    editNombre(objeto.nombre)
+                    editDescr(objeto.descr)
 
                 })
         }
@@ -217,5 +217,8 @@ fun MostrarItem(indice: Int, item: Item,editNombre:(String)->Unit,editDescr:(Str
             .fillMaxWidth()
             .width(4.dp), color = Color.Black
     )
+
 }
+
+
 

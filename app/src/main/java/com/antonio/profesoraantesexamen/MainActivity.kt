@@ -10,7 +10,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import com.antonio.profesoraantesexamen.ui.screens.ScaffoldScreenAppFich
+import com.antonio.profesoraantesexamen.ui.navigation.Navigation
+import com.antonio.profesoraantesexamen.ui.screens.AppConFichsScreen
 import com.antonio.profesoraantesexamen.ui.theme.ProfesoraantesexamenTheme
 
 class MainActivity : ComponentActivity() {
@@ -23,7 +24,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    ScaffoldScreenAppFich()
+                    Navigation()
                 }
             }
         }
