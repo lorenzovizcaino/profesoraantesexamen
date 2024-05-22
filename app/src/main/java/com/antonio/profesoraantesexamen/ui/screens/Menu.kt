@@ -37,7 +37,6 @@ import com.antonio.profesoraantesexamen.ui.model.escribirFichero
 //import com.antonio.profesoraantesexamen.ui.model.grabarCambios_Fichdat
 import com.antonio.profesoraantesexamen.ui.model.guardarItemEnFichero
 import com.antonio.profesoraantesexamen.ui.model.guardarListaEnFichero
-import com.antonio.profesoraantesexamen.ui.model.itemsSer
 //import com.antonio.profesoraantesexamen.ui.model.leerDatos_Fichdat
 //import com.antonio.profesoraantesexamen.ui.model.serializarObjetoFich
 import com.antonio.profesoraantesexamen.ui.viewmodel.ItemViewModel
@@ -62,7 +61,7 @@ fun ScaffoldScreenAppFich(navController: NavController, viewModel: ItemViewModel
                 contentColor = MaterialTheme.colorScheme.primary,
             ) {
                 Text(text = "Listado-numEltos-")
-                Text(text = itemsSer.size.toString())
+                Text(text = viewModel.getLista().size.toString())
             }
         }
     ) {// (1)
@@ -81,7 +80,7 @@ fun ScaffoldScreenAppFich(navController: NavController, viewModel: ItemViewModel
 
 
 @Composable
-fun AppConFichsScreen(navController: NavController, viewModel: ItemViewModel) {
+fun Menu(navController: NavController, viewModel: ItemViewModel) {
 
     ScaffoldScreenAppFich(navController,viewModel)
 }

@@ -11,7 +11,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.antonio.profesoraantesexamen.ui.navigation.Navigation
-import com.antonio.profesoraantesexamen.ui.screens.AppConFichsScreen
 import com.antonio.profesoraantesexamen.ui.theme.ProfesoraantesexamenTheme
 
 class MainActivity : ComponentActivity() {

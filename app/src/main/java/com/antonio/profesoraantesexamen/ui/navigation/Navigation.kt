@@ -5,7 +5,7 @@ import androidx.compose.runtime.remember
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.antonio.profesoraantesexamen.ui.screens.AppConFichsScreen
+import com.antonio.profesoraantesexamen.ui.screens.Menu
 
 
 import com.antonio.profesoraantesexamen.ui.viewmodel.ItemViewModel
@@ -18,7 +18,7 @@ fun Navigation() {
     NavHost(navController, startDestination = Screens.Menu.route) {
         //pantalla principal con la navegación
         composable(route = Screens.Menu.route) {
-            AppConFichsScreen(navController, viewModelObjeto) }//Nombre del fichero .kt al que navegar
+            Menu(navController, viewModelObjeto) }//Nombre del fichero .kt al que navegar
 
 //        composable(route = Screens.Inicio.route) {
 //            Inicio(navController,viewModelProducto) //Nombre de la función composable a la que navegar
