@@ -25,28 +25,22 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.antonio.profesoraantesexamen.ui.model.ItemSer
+import com.antonio.profesoraantesexamen.ui.model.escribirFichero
 //import com.antonio.profesoraantesexamen.ui.model.grabarCambios_Fichdat
 import com.antonio.profesoraantesexamen.ui.model.guardarItemEnFichero
 import com.antonio.profesoraantesexamen.ui.model.guardarListaEnFichero
 import com.antonio.profesoraantesexamen.ui.model.itemsSer
 //import com.antonio.profesoraantesexamen.ui.model.leerDatos_Fichdat
-import com.antonio.profesoraantesexamen.ui.model.leerItemArchivo
 //import com.antonio.profesoraantesexamen.ui.model.serializarObjetoFich
 import com.antonio.profesoraantesexamen.ui.viewmodel.ItemViewModel
-import java.io.File
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
@@ -60,7 +54,7 @@ fun ScaffoldScreenAppFich(navController: NavController, viewModel: ItemViewModel
                     containerColor = MaterialTheme.colorScheme.primaryContainer,
                     titleContentColor = MaterialTheme.colorScheme.primary,
                 ),
-                title = { Text(text = "Items a Fichero .tx y .dat") })
+                title = { Text(text = "Items a Fichero .dat") })
         },
         bottomBar = {
             BottomAppBar(
@@ -97,8 +91,13 @@ fun AppConFichsScreen(navController: NavController, viewModel: ItemViewModel) {
 @Composable
 fun AdministrarItems(navController: NavController, viewModel: ItemViewModel) {
     val activity = LocalContext.current
-    //leerDatos_Fichdat(activity)
-    guardarListaEnFichero(activity)
+
+    if(viewModel.banderaFichero){
+        guardarListaEnFichero(activity)
+        print("HOLA")
+        viewModel.set_banderaFichero(false)
+    }
+
 
 
 
@@ -123,15 +122,11 @@ fun AdministrarItems(navController: NavController, viewModel: ItemViewModel) {
 
 
             val nuevoItemSer = ItemSer(viewModel.nombre, viewModel.descr)
-            itemsSer.add(nuevoItemSer)
+            viewModel.getLista().add(nuevoItemSer)
 
             val path = activity.getFilesDir()
 
 
-            //.dat
-           // val archivo = File(path,"items.dat")
-            // Serializar objeto
-          //  serializarObjetoFich(nuevoItemSer, archivo)
             guardarItemEnFichero(activity,nuevoItemSer)
 
             viewModel.set_nombre("")
@@ -140,30 +135,32 @@ fun AdministrarItems(navController: NavController, viewModel: ItemViewModel) {
             Text(text = "Agregar", /*modifier = Modifier.fillMaxWidth()*/)
         }
 
-//        val file = File(activity.filesDir, "items.dat")
-//        if (file.exists()) {
 
-
-            //leerDatos_Fichdat(activity)//uso .dat
 
 
             LazyColumn(){
-                items(itemsSer){
+                items(viewModel.getLista()){
                     MostrarItem(
+                        viewModel=viewModel,
                         objeto=it ,
                         editNombre = { viewModel.set_nombre(it) },
                         editDescr = { viewModel.set_descr(it) }
                     )
                 }
             }
-       // }
+
     }
 }
 
 
 
 @Composable
-fun MostrarItem(objeto: ItemSer,editNombre: (String) -> Unit, editDescr: (String) -> Unit) {
+fun MostrarItem(
+    objeto: ItemSer,
+    editNombre: (String) -> Unit,
+    editDescr: (String) -> Unit,
+    viewModel: ItemViewModel
+) {
     val context = LocalContext.current
 
     Row(
@@ -186,9 +183,9 @@ fun MostrarItem(objeto: ItemSer,editNombre: (String) -> Unit, editDescr: (String
                 contentDescription = "",
                 modifier = Modifier.clickable {
 
-                    itemsSer.remove(objeto)
-                    //grabarCambios_Fichdat(context)
-                    guardarItemEnFichero(context,objeto)
+                    viewModel.getLista().remove(objeto)
+
+                    escribirFichero(context)
                 })
         }
         Column(
@@ -201,9 +198,9 @@ fun MostrarItem(objeto: ItemSer,editNombre: (String) -> Unit, editDescr: (String
                     Toast.makeText(context, "Modifica Datos Contacto seleccionado.", Toast.LENGTH_SHORT).show()
 
 
-                    itemsSer.remove(objeto)
-                    //grabarCambios_Fichdat(context)
-                    guardarItemEnFichero(context,objeto)
+                    viewModel.getLista().remove(objeto)
+
+                    escribirFichero(context)
 
                     editNombre(objeto.nombre)
                     editDescr(objeto.descr)

@@ -24,6 +24,9 @@ class ItemViewModel:ViewModel(){
     var objeto by mutableStateOf(ItemSer("",""))
         private set
 
+    var banderaFichero by mutableStateOf(true)
+    private set
+
     fun set_nombre(nombre:String){
         this.nombre=nombre
     }
@@ -34,6 +37,9 @@ class ItemViewModel:ViewModel(){
 
     fun set_Objeto(objeto:ItemSer){
         this.objeto=objeto
+    }
+    fun set_banderaFichero(banderaFichero:Boolean){
+        this.banderaFichero=banderaFichero
     }
 
 

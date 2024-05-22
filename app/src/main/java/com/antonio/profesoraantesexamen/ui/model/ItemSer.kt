@@ -18,46 +18,14 @@ data class ItemSer(val nombre: String, val descr: String) : Serializable
     )
         private set
 
-    val nombreArchivo="objeto3.dat"
+    val nombreArchivo="objeto6.dat"
 
     fun getListaclass(): MutableList<ItemSer> {
         return itemsSer
     }
 
 
-//    fun serializarObjetoFich(objeto: Any, archivo: File) {
-//        ObjectOutputStream(FileOutputStream(archivo)).use { it.writeObject(objeto) }
-//    }
-//
-//    fun deserializarObjetoFich(archivo: File): Any? {
-//        return ObjectInputStream(FileInputStream(archivo)).use { it.readObject() }
-//    }
-//
-//    fun leerDatos_Fichdat(context: Context){
-//        val archivo = File(context.filesDir, "items.dat")
-//
-//        val input = ObjectInputStream(archivo.inputStream())
-//
-//        input.use {
-//            // Podemos leer cualquier objeto serializable, ya sea un objeto o una colección
-////        val itemsLeidos = it.readObject() as List<ItemSer>
-////        itemsSer.addAll(itemsLeidos)
-//            // podría leer uno a uno
-//            while (it.available() > 0) {
-//                val item = it.readObject() as ItemSer
-//                itemsSer.add(item)
-//            }
-//        }
-//    }
-//
-//    fun grabarCambios_Fichdat(context: Context) {
-//        val archivo = File(context.filesDir, "items.dat")
-//        archivo.delete()
-//        for (item in itemsSer) {
-//            // Serializar objeto
-//            serializarObjetoFich(item, archivo)
-//        }
-//    }
+
 
 //DESDE AQUI PARA GUARDAR EN FICHERO
 
@@ -98,6 +66,15 @@ fun guardarItemEnFichero(context: Context,itemSer: ItemSer){
         println("Error al escribir el objeto en el archivo: ${ex.message}")
     }
 
+}
+
+fun escribirFichero(context: Context){
+    var archivo = File(context.filesDir, nombreArchivo)
+    val objectOutputStream = ObjectOutputStream(FileOutputStream(archivo))
+    itemsSer.forEach(){item->
+        serializarObjeto(item, objectOutputStream)
+    }
+    objectOutputStream.close()
 }
 
 fun serializarObjeto(objeto: ItemSer, objectOutputStream: ObjectOutputStream) {
